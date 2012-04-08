@@ -22,4 +22,26 @@
 		<servlet-name>Logon</servlet-name>
 		<url-pattern>/logon</url-pattern>
 	</servlet-mapping>
+	<!-- 
+		tomcat-users.xml Locations
+		Eclipse: C:\johnwarde\java\Servers\Tomcat v6.0 Server at localhost-config\tomcat-users.xml
+		Outside Eclipse: C:\apps\apache-tomcat-6.0.35-windows-x64\conf
+	-->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Logon</web-resource-name>
+			<url-pattern>/logon</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>quizplayer</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+	</login-config>
+	<security-role>
+		<role-name>quizplayer</role-name>
+	</security-role>
 </web-app>
