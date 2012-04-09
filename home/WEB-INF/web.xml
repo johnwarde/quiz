@@ -14,13 +14,21 @@
 	</welcome-file-list>
 	<servlet>
 		<description></description>
-		<display-name>Logon</display-name>
-		<servlet-name>Logon</servlet-name>
-		<servlet-class>quiz.Logon</servlet-class>
+		<display-name>Controller</display-name>
+		<servlet-name>Controller</servlet-name>
+		<servlet-class>quiz.Controller</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Logon</servlet-name>
+		<servlet-name>Controller</servlet-name>
 		<url-pattern>/logon</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Controller</servlet-name>
+		<url-pattern>/play</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Controller</servlet-name>
+		<url-pattern>/gameover</url-pattern>
 	</servlet-mapping>
 	<!-- 
 		tomcat-users.xml Locations
@@ -29,8 +37,8 @@
 	-->
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Logon</web-resource-name>
-			<url-pattern>/logon</url-pattern>
+			<web-resource-name>Controller</web-resource-name>
+			<url-pattern>/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
