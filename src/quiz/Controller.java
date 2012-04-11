@@ -7,18 +7,25 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Hashtable;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.tomcat.util.buf.Base64;
+
 
 /**
  * Servlet implementation class Controller
  */
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String cookieValueSeparator = "|";
+	private static final String cookieName = "session";
 	private static Connection con = null;
+
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -85,35 +92,92 @@ public class Controller extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.setContentType("text/html");
-	    PrintWriter out = response.getWriter();
-	    String requestURL = request.getRequestURL().toString();
-	    String contextPath = request.getContextPath();
-	    String pathInfo = request.getPathInfo();
-	    String servletPath = request.getServletPath();
-
-	    
-	    out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 " +
-	  	      "Transitional//EN\">\n");
-	    out.println("<HTML>\n" +
-	                "<HEAD><TITLE>Hello</TITLE></HEAD>\n" +
-	                "<BODY BGCOLOR=\"#FDF5E6\">\n" +
-	                "<H1>Hello World</H1>\n" +
-	                "<P>Ready for a Quiz?</P>\n" +
-	                "<P>requestURL = [" + requestURL + "]</P>\n" +
-	                "<P>contextPath = [" + contextPath + "]</P>\n" +
-	                "<P>pathInfo = [" + pathInfo + "]</P>\n" +
-	                "<P>servletPath = [" + servletPath + "]</P>\n" +
-	                "</BODY></HTML>");		
+		doRequest(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		doRequest(request, response);
 	}
+	
+	
+	/**
+	 * @see HttpServlet#doRequest(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    String action = request.getServletPath().substring(1);
+	    GamesManager gamesMgr;
+	    InPlayManager playMgr;
+	    PageView view = PageViewFactory.createView(request);
+	    Cookie[] cookies;
+		Hashtable<String, String> nvpairs;
+	    response.setContentType("text/html");
+	    PrintWriter out = response.getWriter();
+  
+	    switch (action) {
+		case "logon":
+			// New Logon
+		    String encodedAuth = request.getHeader("authorization").split(" ")[1];
+			String username = Base64.base64Decode(encodedAuth).split(":")[0];
+			javax.servlet.http.Cookie newCookie = new javax.servlet.http.Cookie(cookieName, username + cookieValueSeparator + generateSessionID());
+			response.addCookie(newCookie);
+			gamesMgr = new GamesManager();
+			gamesMgr.setUsername(username);
+			nvpairs = gamesMgr.getPageNameValues();
+			view.render(out, nvpairs, "Welcome");
+			// Above need to set the form/button to go to /quiz/play
+			break;
+		case "play":
+			playMgr = new InPlayManager();
+		    cookies = request.getCookies();
+		    for (int i = 0; i < cookies.length; i++) {
+		    	if (cookieName == cookies[i].getName()) {
+		    		String cookieValue = cookies[i].getValue();
+		    		playMgr.setUsername(cookieValue.split(cookieValueSeparator)[0]);
+					//javax.servlet.http.Cookie gameCookie = new javax.servlet.http.Cookie(cookieName, cookieValue);
+					response.addCookie(cookies[i]);		    		
+		    		break;
+				}
+			}
+		    // TODO: Convert to int???
+		    playMgr.setQuestionNo(request.getParameter("qno"));
+		    playMgr.setQuestionId(request.getParameter("qid"));
+		    playMgr.setUserAnswer(request.getParameter("answer"));
+			nvpairs = playMgr.getPageNameValues();
+			//TODO: If qno == last then form should re-direct to /quiz/gameover 
+			view.render(out, nvpairs, "GameSequence");
+			// TODO: use javascript/jQuery to validate that an answer was selected
+			break;
+		case "gameover":
+			gamesMgr = new GamesManager();
+		    cookies = request.getCookies();
+		    for (int i = 0; i < cookies.length; i++) {
+		    	if (cookieName == cookies[i].getName()) {
+		    		String cookieValue = cookies[i].getValue();
+		    		gamesMgr.setUsername(cookieValue.split(cookieValueSeparator)[0]);
+		    		// TODO: Should we disregard the cookie for game over?
+					//javax.servlet.http.Cookie gameCookie = new javax.servlet.http.Cookie(cookieName, cookieValue);
+					response.addCookie(cookies[i]);		    		
+		    		break;
+				}
+			}
+		    gamesMgr.awardGameScore(request.getParameter("score"));
+			nvpairs = gamesMgr.getPageNameValues();
+			view.render(out, nvpairs, "GameOver");			
+			break;
+		default:
+			break;
+		}	
+	}
+	
+	
+	public static String generateSessionID() {
+		java.rmi.server.UID uid = new java.rmi.server.UID();
+		String sessionID = uid.toString();
+		return sessionID;
+	}	
 	
 	
     public void destroy() {
