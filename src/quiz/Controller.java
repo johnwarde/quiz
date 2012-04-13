@@ -2,8 +2,8 @@ package quiz;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+//import java.sql.DriverManager;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.buf.Base64;
 
+//import quiz.DBConnectionMgr;
 
 /**
  * Servlet implementation class Controller
@@ -32,19 +33,21 @@ public class Controller extends HttpServlet {
      */
     public Controller() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     
     public void init() {
+
 		try
 		{
+	    	Connection con = DBConnectionMgr.getInstance().getConnection();			
+/*
 			// Load (and therefore register) the Database Driver
 			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
 
 			// Get a connection to the database
 			con = DriverManager.getConnection("jdbc:odbc:mysqlquiz","root","mysqlpass");
-
+*/
 			Statement stmt = null;
 			ResultSet rs = null;
 			
@@ -60,11 +63,13 @@ public class Controller extends HttpServlet {
 				System.out.print("id = [" + rs.getString("id") + "]; name = [" + rs.getString("name") + "]; last_score = [" + rs.getString("last_score") + "]");
 			}
 		}
+/*
 		catch(ClassNotFoundException e)
 		{
 //			out.println("Could not load Database Driver : " + e.getMessage());
 			System.out.print("Could not load Database Driver : " + e.getMessage());
 		}
+*/
 		catch(SQLException e)
 		{
 //			out.println("SQL Exception caught : " + e.getMessage());
@@ -75,11 +80,14 @@ public class Controller extends HttpServlet {
 			// Always close the database connection
 			try
 			{
+				con.close();
+/*
 				// if database connection is still open
 				if (con != null)
 				{
 					con.close();
 				}
+*/
 			}
 			catch(SQLException ignored)
 			{
@@ -178,8 +186,8 @@ public class Controller extends HttpServlet {
 		String sessionID = uid.toString();
 		return sessionID;
 	}	
-	
-	
+
+
     public void destroy() {
 		try
 		{
@@ -193,5 +201,10 @@ public class Controller extends HttpServlet {
 		{
 		}
     }
-
+    
+    
+	public Connection getDbConnection() {
+		return con;
+	}		
+	
 }
