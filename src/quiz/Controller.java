@@ -94,7 +94,6 @@ public class Controller extends HttpServlet {
 	    response.setContentType("text/html");
 	    PrintWriter out = response.getWriter();
 
-  
 	    switch (action) {
 		case "logon":
 			// New Logon
@@ -104,49 +103,25 @@ public class Controller extends HttpServlet {
 			response.addCookie(newCookie);
 			gamesMgr = new GamesManager(con);
 			gamesMgr.setUsername(username);
-			//gamesMgr.setConnection(con);
 			nvpairs = gamesMgr.getPageNameValues();
 			view.render(out, nvpairs, "welcome", cssref);
-			// Above need to set the form/button to go to /quiz/play
 			break;
 		case "play":
 			playMgr = new InPlayManager(con);
 		    cookies = request.getCookies();
 		    for (int i = 0; i < cookies.length; i++) {
 		    	if (cookieName == cookies[i].getName()) {
-		    		//String cookieValue = cookies[i].getValue();
-		    		//playMgr.setUsername(cookieValue.split(cookieValueSeparator)[0]);
-					//javax.servlet.http.Cookie gameCookie = new javax.servlet.http.Cookie(cookieName, cookieValue);
 					response.addCookie(cookies[i]);		    		
 		    		break;
 				}
 			}
-		    // TODO: Convert to int???
 		    playMgr.setQuestionNo(request.getParameter("qno"));
 		    playMgr.setQuestionId(request.getParameter("qid"));
 		    playMgr.setUserAnswer(request.getParameter("answer"));
 		    playMgr.setUserTotalScore(request.getParameter("total"));
 			nvpairs = playMgr.getPageNameValues();
-			//TODO: If qno == last then form should re-direct to /quiz/gameover 
-			view.render(out, nvpairs, "game-sequence", cssref);
+			view.render(out, nvpairs, nvpairs.get("use-template"), cssref);
 			// TODO: use javascript/jQuery to validate that an answer was selected
-			break;
-		case "gameover":
-			gamesMgr = new GamesManager(con);
-		    cookies = request.getCookies();
-		    for (int i = 0; i < cookies.length; i++) {
-		    	if (cookieName == cookies[i].getName()) {
-		    		String cookieValue = cookies[i].getValue();
-		    		gamesMgr.setUsername(cookieValue.split(cookieValueSeparator)[0]);
-		    		// TODO: Should we disregard the cookie for game over?
-					//javax.servlet.http.Cookie gameCookie = new javax.servlet.http.Cookie(cookieName, cookieValue);
-					response.addCookie(cookies[i]);		    		
-		    		break;
-				}
-			}
-		    gamesMgr.awardGameScore(request.getParameter("score"));
-			nvpairs = gamesMgr.getPageNameValues();
-			view.render(out, nvpairs, "GameOver", cssref);			
 			break;
 		default:
 			break;

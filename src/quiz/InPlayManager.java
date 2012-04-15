@@ -74,6 +74,7 @@ public class InPlayManager implements Renderable {
 		Hashtable<String, String> nvpairs = new Hashtable<String, String>();
 		ResultSet rs = null;
 		nvpairs.put("message", "&nbsp;");
+		nvpairs.put("use-template", "game-sequence"); // default / regular template
 		if (null != questionId && "" != questionId) {
 			// User has just answered a question, need to check answer against database
 			try
@@ -84,10 +85,8 @@ public class InPlayManager implements Renderable {
 				if (rs.next()) {
 					if (userAnswer == rs.getBoolean("correct_answer")) {
 						totalScore++;
-						System.out.println("Correctamundo!");
 						nvpairs.put("message", "Correct answer! Now for the next one.");
 					} else {
-						System.out.println("De Dum!");
 						nvpairs.put("message", "Incorrect! Better luck with this one.");
 					}
 				} else {
@@ -109,8 +108,11 @@ public class InPlayManager implements Renderable {
 			questionId = String.format("%d", questionNo);
 		}
 		if (questionNo > maxQuestions) {
-			// The user has answered the last question
-			
+			// The user has just answered the last question
+			nvpairs.put("use-template", "game-over");  // This will cause the controller to behave differently
+			// TODO: call awardScore() in GamesManager class or refactor
+			nvpairs.put("summary", String.format("You got %s questions out of %d", totalScore, maxQuestions));	
+			nvpairs.put("message", "Game Over!");	
 		} else {
 
 		}

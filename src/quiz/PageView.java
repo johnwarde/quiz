@@ -32,7 +32,7 @@ abstract public class PageView {
 				templates.put(key, templateContents);		
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.print("Error loading templates : " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -46,8 +46,8 @@ abstract public class PageView {
 	    	placeHolder = keys.nextElement();
 	    	replaceValue = nvpairs.get(placeHolder);
 	    	placeHolder = "@@" + placeHolder + "@@";
-        	System.out.println(placeHolder);
         	rendered = rendered.replaceAll(placeHolder, replaceValue);
+        	System.out.println(placeHolder + "[" + replaceValue + "]");        	
 	    }
     	rendered = rendered.replaceAll("@@css-file-ref@@", cssref);
 	    out.println(rendered);
