@@ -66,7 +66,7 @@ public class InPlayManager implements Renderable {
 		return maxQuestions;
 	}	
 	
-	@Override
+	//@Override
 	public Hashtable<String, String> getPageNameValues() {
 		Hashtable<String, String> nvpairs = new Hashtable<String, String>();
 		ResultSet rs = null;

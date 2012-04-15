@@ -1,7 +1,7 @@
 package quiz;
 
-import java.util.Hashtable;
+//import java.util.Hashtable;
 
 public interface Renderable {
-	public Hashtable<String, String> getPageNameValues();
+	//public Hashtable<String, String> getPageNameValues();
 }

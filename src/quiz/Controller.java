@@ -18,7 +18,7 @@ import org.apache.tomcat.util.buf.Base64;
  */
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String cookieValueSeparator = "|";
+	private static final String cookieValueSeparator = "$";
 	private static final String cookieName = "session";
 	private static String templatesFolder;
 
@@ -57,8 +57,7 @@ public class Controller extends HttpServlet {
 	protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String action = request.getServletPath().substring(1);
 	    String cssref = request.getContextPath() + "/styles/browser-desktop/quiz.css";
-	    GamesManager gamesMgr;
-	    InPlayManager playMgr;
+	    GamesManager gamesMgr = new GamesManager();;
 	    PageView view = PageViewFactory.createView(request, templatesFolder);
 	    Cookie[] cookies;
 		Hashtable<String, String> nvpairs;
@@ -72,26 +71,28 @@ public class Controller extends HttpServlet {
 			String username = Base64.base64Decode(encodedAuth).split(":")[0];
 			Cookie newCookie = new Cookie(cookieName, username + cookieValueSeparator + generateSessionID());
 			response.addCookie(newCookie);
-			gamesMgr = new GamesManager();
 			gamesMgr.setUsername(username);
-			nvpairs = gamesMgr.getPageNameValues();
+			nvpairs = gamesMgr.getValuesForWelcome();
 			view.render(out, nvpairs, "welcome", cssref);
 			break;
 		case "play":
-			playMgr = new InPlayManager();
 		    cookies = request.getCookies();
 		    for (int i = 0; i < cookies.length; i++) {
-		    	if (cookieName == cookies[i].getName()) {
+		    	if (cookieName.equalsIgnoreCase(cookies[i].getName())) {
 		    		// TODO: test to make sure this happens!
+		    		String cookieValue = cookies[i].getValue();
+		    		String[] cookieParts = cookieValue.split(cookieValueSeparator);
+		    		gamesMgr.setUsername(cookieParts[0]);
+		    		//gamesMgr.setUsername(cookieValue.split(cookieValueSeparator)[0]);
 					response.addCookie(cookies[i]);		    		
 		    		break;
 				}
 			}
-		    playMgr.setQuestionNo(request.getParameter("qno"));
-		    playMgr.setQuestionId(request.getParameter("qid"));
-		    playMgr.setUserAnswer(request.getParameter("answer"));
-		    playMgr.setUserTotalScore(request.getParameter("total"));
-			nvpairs = playMgr.getPageNameValues();
+		    gamesMgr.setQuestionNo(request.getParameter("qno"));
+		    gamesMgr.setQuestionId(request.getParameter("qid"));
+		    gamesMgr.setUserAnswer(request.getParameter("answer"));
+		    gamesMgr.setUserTotalScore(request.getParameter("total"));
+			nvpairs = gamesMgr.getValuesForSequence();
 			view.render(out, nvpairs, nvpairs.get("use-template"), cssref);
 			// TODO: use javascript/jQuery to validate that an answer was selected
 			break;
