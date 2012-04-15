@@ -2,9 +2,6 @@ package quiz;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Hashtable;
 
 import javax.servlet.ServletException;
@@ -23,7 +20,6 @@ public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String cookieValueSeparator = "|";
 	private static final String cookieName = "session";
-	private static Connection con;
 	private static String templatesFolder;
 
        
@@ -37,32 +33,7 @@ public class Controller extends HttpServlet {
     
     public void init() {
 	    templatesFolder = getServletContext().getRealPath("/WEB-INF/templates");
-	    
-//    	Connection con = null;
-		try
-		{
-//	    	con = DBConnectionMgr.getInstance().getConnection();			
-
-			// Load (and therefore register) the Database Driver
-			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-
-			// Get a connection to the database
-			con = DriverManager.getConnection("jdbc:odbc:mysqlquiz","root","mysqlpass");
-		}
-
-		catch(ClassNotFoundException e)
-		{
-			System.out.print("Could not load Database Driver : " + e.getMessage());
-		}
-
-		catch(SQLException e)
-		{
-			System.out.print("SQL Exception caught : " + e.getMessage());
-		}
-		finally
-		{
-
-		} // end finally
+    	DBConnectionMgr.getInstance(); // Will create the connection to the DB
     }
     
 	/**
@@ -101,16 +72,17 @@ public class Controller extends HttpServlet {
 			String username = Base64.base64Decode(encodedAuth).split(":")[0];
 			Cookie newCookie = new Cookie(cookieName, username + cookieValueSeparator + generateSessionID());
 			response.addCookie(newCookie);
-			gamesMgr = new GamesManager(con);
+			gamesMgr = new GamesManager();
 			gamesMgr.setUsername(username);
 			nvpairs = gamesMgr.getPageNameValues();
 			view.render(out, nvpairs, "welcome", cssref);
 			break;
 		case "play":
-			playMgr = new InPlayManager(con);
+			playMgr = new InPlayManager();
 		    cookies = request.getCookies();
 		    for (int i = 0; i < cookies.length; i++) {
 		    	if (cookieName == cookies[i].getName()) {
+		    		// TODO: test to make sure this happens!
 					response.addCookie(cookies[i]);		    		
 		    		break;
 				}
@@ -137,22 +109,7 @@ public class Controller extends HttpServlet {
 
 
     public void destroy() {
-		try
-		{
-			// if database connection is still open
-			if (con != null)
-			{
-				con.close();
-			}
-		}
-		catch(SQLException ignored)
-		{
-		}
+    	DBConnectionMgr.getInstance().close();    	
     }
-    
-    
-//	public Connection getDbConnection() {
-//		return con;
-//	}		
-	
+
 }

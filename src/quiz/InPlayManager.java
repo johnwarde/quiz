@@ -16,8 +16,9 @@ public class InPlayManager implements Renderable {
 	private Connection con;
 	PreparedStatement getQuestionStmt;
 
-	public InPlayManager(Connection dbConnection) {
-		con = dbConnection;		
+	public InPlayManager() {
+		// con = dbConnection;
+		con = DBConnectionMgr.getInstance().getConnection();
 		try
 		{
 			getQuestionStmt = con.prepareStatement(

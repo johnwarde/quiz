@@ -13,8 +13,9 @@ public class GamesManager implements Renderable {
 	PreparedStatement insertScoreStmt;
 	PreparedStatement updateScoreStmt;
 	
-	public GamesManager(Connection dbConnection) {
-		con = dbConnection;		
+	public GamesManager() {
+		//con = dbConnection;
+		con = DBConnectionMgr.getInstance().getConnection();
 		try
 		{
 			lastScoreStmt = con.prepareStatement(
