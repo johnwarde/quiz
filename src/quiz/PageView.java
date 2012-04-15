@@ -29,7 +29,7 @@ abstract public class PageView {
 				key = file.getName();
 				key = key.substring(0, key.length() - 5);
 				templateContents = readEntireFile(file.toString());
-				templates.put(key, templateContents);		
+				templates.put(key, templateContents);
 			}
 		} catch (IOException e) {
 			System.out.print("Error loading templates : " + e.getMessage());
@@ -39,6 +39,7 @@ abstract public class PageView {
 	
 	public void defaultRender(PrintWriter out,
 			Hashtable<String, String> nvpairs, String pageName, String cssref) {
+    	System.out.println("Rendering template = [" + pageName + "]");    
 		String rendered = templates.get(pageName);
 		String replaceValue, placeHolder;
 	    Enumeration<String> keys = nvpairs.keys();
@@ -47,7 +48,7 @@ abstract public class PageView {
 	    	replaceValue = nvpairs.get(placeHolder);
 	    	placeHolder = "@@" + placeHolder + "@@";
         	rendered = rendered.replaceAll(placeHolder, replaceValue);
-        	System.out.println(placeHolder + "[" + replaceValue + "]");        	
+        	System.out.println(placeHolder + " = [" + replaceValue + "]");        	
 	    }
     	rendered = rendered.replaceAll("@@css-file-ref@@", cssref);
 	    out.println(rendered);

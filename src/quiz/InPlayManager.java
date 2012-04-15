@@ -11,7 +11,7 @@ public class InPlayManager implements Renderable {
 //	private String username = "";
 	private int questionNo = 0;
 	private String questionId = "";
-	private Boolean userAnswer;
+	private String userAnswer;
 	private int totalScore = 0;
 	private Connection con;
 	PreparedStatement getQuestionStmt;
@@ -47,11 +47,7 @@ public class InPlayManager implements Renderable {
 	}	
 
 	public void setUserAnswer(String answer) {
-		if (null == answer) {
-			userAnswer = false;
-		} else {
-			userAnswer = Boolean.parseBoolean(answer);			
-		}		
+		userAnswer = answer;
 	}	
 	
 	public void setUserTotalScore(String score) {
@@ -76,31 +72,39 @@ public class InPlayManager implements Renderable {
 		nvpairs.put("message", "&nbsp;");
 		nvpairs.put("use-template", "game-sequence"); // default / regular template
 		if (null != questionId && "" != questionId) {
-			// User has just answered a question, need to check answer against database
-			try
-			{
-				getQuestionStmt.clearParameters();
-				getQuestionStmt.setString(1, questionId);
-				rs = getQuestionStmt.executeQuery();
-				if (rs.next()) {
-					if (userAnswer == rs.getBoolean("correct_answer")) {
-						totalScore++;
-						nvpairs.put("message", "Correct answer! Now for the next one.");
+			Boolean answer;
+			if (null == userAnswer) {
+				// User did not select an answer
+				nvpairs.put("message", "Please choose an option above!");
+			} else {
+				// User has choosen an answer
+				answer = Boolean.parseBoolean(userAnswer);
+				// User has just answered a question, need to check answer against database
+				try
+				{
+					getQuestionStmt.clearParameters();
+					getQuestionStmt.setString(1, questionId);
+					rs = getQuestionStmt.executeQuery();
+					if (rs.next()) {
+						if (answer == rs.getBoolean("correct_answer")) {
+							totalScore++;
+							nvpairs.put("message", "Correct answer! Now for the next one.");
+						} else {
+							nvpairs.put("message", "Incorrect! Better luck with this one.");
+						}
 					} else {
-						nvpairs.put("message", "Incorrect! Better luck with this one.");
+						nvpairs.put("message", "An application error has occurred!");
+						System.out.println("Error getting the current answer");
 					}
-				} else {
-					nvpairs.put("message", "An application error has occurred!");
-					System.out.println("Error getting the current answer");
+					questionNo++;
+					// questionId will be used when supporting random 
+					// questions from many questions in the database 
+					questionId = String.format("%d", questionNo);
 				}
-				questionNo++;
-				// questionId will be used when supporting random 
-				// questions from many questions in the database 
-				questionId = String.format("%d", questionNo);
-			}
-			catch(SQLException e)
-			{
-				System.out.print("SQL Exception caught : " + e.getMessage());
+				catch(SQLException e)
+				{
+					System.out.print("SQL Exception caught : " + e.getMessage());
+				}
 			}
 		} else {
 			// First question, set defaults
@@ -113,8 +117,6 @@ public class InPlayManager implements Renderable {
 			// TODO: call awardScore() in GamesManager class or refactor
 			nvpairs.put("summary", String.format("You got %s questions out of %d", totalScore, maxQuestions));	
 			nvpairs.put("message", "Game Over!");	
-		} else {
-
 		}
 		// Get the next question content
 		try

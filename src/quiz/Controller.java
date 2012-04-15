@@ -99,7 +99,7 @@ public class Controller extends HttpServlet {
 			// New Logon
 		    String encodedAuth = request.getHeader("authorization").split(" ")[1];
 			String username = Base64.base64Decode(encodedAuth).split(":")[0];
-			javax.servlet.http.Cookie newCookie = new javax.servlet.http.Cookie(cookieName, username + cookieValueSeparator + generateSessionID());
+			Cookie newCookie = new Cookie(cookieName, username + cookieValueSeparator + generateSessionID());
 			response.addCookie(newCookie);
 			gamesMgr = new GamesManager(con);
 			gamesMgr.setUsername(username);
