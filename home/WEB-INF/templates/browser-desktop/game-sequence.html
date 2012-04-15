@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- <link rel="stylesheet" type="text/css" href="../../../css/quiz.css" /> -->
+<link rel="stylesheet" type="text/css" href="@@css-file-ref@@" />
+<title>Quiz</title>
+</head>
+<body>
+<div class="main">
+	<div id="title">Game Interactive</div>
+	<div>&nbsp;</div>
+	<div id="question">Question: @@question-content@@</div>
+	<div id="content">
+		<form action="play" method="post">
+			<input type="hidden" name="qno" value="@@qno@@">
+			<input type="hidden" name="qid" value="@@qid@@">
+			<input type="hidden" name="total" value="@@total@@">
+			<br />
+			<div id="choices">
+				<input type="radio" name="answer" value="true" /> (a) TRUE<br /><br />
+				<input type="radio" name="answer" value="false" /> (b) FALSE
+		    </div>	
+		    <br /><br />
+		    <div id="buttons">
+				<input type="submit" name="start" value="Submit"/>
+				<input type="reset" name="start" value="Reset"/>
+			</div>
+	    </form>
+	</div>
+	<div>
+		<div id="message">@@message@@</div>
+	</div>
+</div>
+</body>
+</html>

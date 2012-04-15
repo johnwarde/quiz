@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class DBConnectionMgr {
 //	private static final DBConnectionMgr instance = new DBConnectionMgr();
 //	private static Connection con;
-	private static DBConnectionMgr instance = null;
+	private static DBConnectionMgr instance;
 	private Connection con;
 	
 	/**
@@ -52,6 +52,9 @@ public class DBConnectionMgr {
 		catch(SQLException e) {
 			System.out.print("SQL Exception caught : " + e.getMessage());
 		}
+		catch(Exception e) {
+			System.out.print("Exception caught : " + e.getMessage());
+		}		
 		finally {
 			// Always close the database connection
 			try {

@@ -19,6 +19,10 @@
 		<servlet-class>quiz.Controller</servlet-class>
 	</servlet>
 	<servlet-mapping>
+	 <servlet-name>default</servlet-name>
+	 <url-pattern>*.css</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
 		<servlet-name>Controller</servlet-name>
 		<url-pattern>/logon</url-pattern>
 	</servlet-mapping>
