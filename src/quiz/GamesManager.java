@@ -39,10 +39,6 @@ public class GamesManager implements Renderable {
 		}
 	}
 	
-	public void setConnection(Connection dbConnection) {
-		con = dbConnection;
-	}
-	
 	public void setUsername(String playerUsername) {
 		username = playerUsername;
 	}
@@ -73,13 +69,6 @@ public class GamesManager implements Renderable {
 		}		
 	}
 	
-	/**
-	 * @return the maxquestions
-	 */
-	public static int getMaxquestions() {
-		return maxQuestions;
-	}	
-	
 	
 	public Hashtable<String, String> getValuesForSequence() {
 		Hashtable<String, String> nvpairs = new Hashtable<String, String>();
@@ -92,7 +81,6 @@ public class GamesManager implements Renderable {
 				// User did not select an answer
 				nvpairs.put("message", "Please choose an option above!");
 			} else {
-				// User has choosen an answer
 				answer = Boolean.parseBoolean(userAnswer);
 				// User has just answered a question, need to check answer against database
 				try
@@ -129,10 +117,11 @@ public class GamesManager implements Renderable {
 		if (questionNo > maxQuestions) {
 			// The user has just answered the last question
 			nvpairs.put("use-template", "game-over");  // This will cause the controller to behave differently
-			// TODO: call awardScore() in GamesManager class or refactor
 			awardGameScore(totalScore);
 			nvpairs.put("summary", String.format("You got %s questions out of %d", totalScore, maxQuestions));	
-			nvpairs.put("message", "Game Over!");	
+			nvpairs.put("message", "Game Over!");
+			// We have all we need at this point, no need to get the next question this time.
+			return nvpairs;
 		}
 		// Get the next question content
 		try
@@ -186,9 +175,6 @@ public class GamesManager implements Renderable {
 		{
 			System.out.print("SQL Exception caught : " + e.getMessage());
 		}
-		finally
-		{
-		} // end finally	
 	}
 	
 	public Hashtable<String, String> getValuesForWelcome() {
@@ -213,9 +199,6 @@ public class GamesManager implements Renderable {
 		{
 			System.out.print("SQL Exception caught : " + e.getMessage());
 		}
-		finally
-		{
-		} // end finally
 		return nvpairs;
 	}
 }

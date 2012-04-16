@@ -40,7 +40,6 @@ public class DBConnectionMgr {
 		try {
 			// Load (and therefore register) the Database Driver
 			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-
 			// Get a connection to the database
 			con = DriverManager.getConnection("jdbc:odbc:mysqlquiz","root","mysqlpass");
 		}

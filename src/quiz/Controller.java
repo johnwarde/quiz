@@ -11,14 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.buf.Base64;
 
-//import quiz.DBConnectionMgr;
 
 /**
  * Servlet implementation class Controller
  */
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String cookieValueSeparator = "$";
+	private static final String cookieValueSeparator = "|";
 	private static final String cookieName = "session";
 	private static String templatesFolder;
 
@@ -79,11 +78,8 @@ public class Controller extends HttpServlet {
 		    cookies = request.getCookies();
 		    for (int i = 0; i < cookies.length; i++) {
 		    	if (cookieName.equalsIgnoreCase(cookies[i].getName())) {
-		    		// TODO: test to make sure this happens!
 		    		String cookieValue = cookies[i].getValue();
-		    		String[] cookieParts = cookieValue.split(cookieValueSeparator);
-		    		gamesMgr.setUsername(cookieParts[0]);
-		    		//gamesMgr.setUsername(cookieValue.split(cookieValueSeparator)[0]);
+		    		gamesMgr.setUsername(cookieValue.split("\\" + cookieValueSeparator)[0]);
 					response.addCookie(cookies[i]);		    		
 		    		break;
 				}
