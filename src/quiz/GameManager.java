@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
-public class GamesManager implements Renderable {
+public class GameManager implements Renderable {
 	private static final int maxQuestions = 10;
 	private String username = "";
 	private int questionNo = 0;
@@ -20,7 +20,7 @@ public class GamesManager implements Renderable {
 	PreparedStatement updateScoreStmt;
 	PreparedStatement getQuestionStmt;
 	
-	public GamesManager() {
+	public GameManager() {
 		con = DBConnectionMgr.getInstance().getConnection();
 		try
 		{
@@ -189,7 +189,7 @@ public class GamesManager implements Renderable {
 			if (rs.next()) {
 				nvpairs.put("welcome-msg", 
 						String.format("You have already played the game %s - your previous score was %d / %d ", 
-								rs.getString("name"), rs.getInt("last_score"), InPlayManager.getMaxquestions()));
+								rs.getString("name"), rs.getInt("last_score"), maxQuestions));
 			} else {
 				nvpairs.put("welcome-msg", String.format("Welcome %s. Let’s start the game.", username));
 			}

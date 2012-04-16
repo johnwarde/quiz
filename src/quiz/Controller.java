@@ -56,7 +56,7 @@ public class Controller extends HttpServlet {
 	protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String action = request.getServletPath().substring(1);
 	    String cssref = request.getContextPath() + "/styles/browser-desktop/quiz.css";
-	    GamesManager gamesMgr = new GamesManager();;
+	    GameManager gameMgr = new GameManager();;
 	    PageView view = PageViewFactory.createView(request, templatesFolder);
 	    Cookie[] cookies;
 		Hashtable<String, String> nvpairs;
@@ -70,8 +70,8 @@ public class Controller extends HttpServlet {
 			String username = Base64.base64Decode(encodedAuth).split(":")[0];
 			Cookie newCookie = new Cookie(cookieName, username + cookieValueSeparator + generateSessionID());
 			response.addCookie(newCookie);
-			gamesMgr.setUsername(username);
-			nvpairs = gamesMgr.getValuesForWelcome();
+			gameMgr.setUsername(username);
+			nvpairs = gameMgr.getValuesForWelcome();
 			view.render(out, nvpairs, "welcome", cssref);
 			break;
 		case "play":
@@ -79,16 +79,16 @@ public class Controller extends HttpServlet {
 		    for (int i = 0; i < cookies.length; i++) {
 		    	if (cookieName.equalsIgnoreCase(cookies[i].getName())) {
 		    		String cookieValue = cookies[i].getValue();
-		    		gamesMgr.setUsername(cookieValue.split("\\" + cookieValueSeparator)[0]);
+		    		gameMgr.setUsername(cookieValue.split("\\" + cookieValueSeparator)[0]);
 					response.addCookie(cookies[i]);		    		
 		    		break;
 				}
 			}
-		    gamesMgr.setQuestionNo(request.getParameter("qno"));
-		    gamesMgr.setQuestionId(request.getParameter("qid"));
-		    gamesMgr.setUserAnswer(request.getParameter("answer"));
-		    gamesMgr.setUserTotalScore(request.getParameter("total"));
-			nvpairs = gamesMgr.getValuesForSequence();
+		    gameMgr.setQuestionNo(request.getParameter("qno"));
+		    gameMgr.setQuestionId(request.getParameter("qid"));
+		    gameMgr.setUserAnswer(request.getParameter("answer"));
+		    gameMgr.setUserTotalScore(request.getParameter("total"));
+			nvpairs = gameMgr.getValuesForSequence();
 			view.render(out, nvpairs, nvpairs.get("use-template"), cssref);
 			// TODO: use javascript/jQuery to validate that an answer was selected
 			break;
