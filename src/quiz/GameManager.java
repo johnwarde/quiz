@@ -1,6 +1,6 @@
 package quiz;
 
-import java.sql.Connection;
+//import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,29 +14,17 @@ public class GameManager implements Renderable {
 	private String userAnswer;
 	private int totalScore = 0;
 
-	private Connection con;
 	PreparedStatement lastScoreStmt;
 	PreparedStatement insertScoreStmt;
 	PreparedStatement updateScoreStmt;
 	PreparedStatement getQuestionStmt;
 	
 	public GameManager() {
-		con = DBConnectionMgr.getInstance().getConnection();
-		try
-		{
-			lastScoreStmt = con.prepareStatement(
-					"SELECT id, name, last_score FROM `quiz`.`players` WHERE name = ?");
-			insertScoreStmt = con.prepareStatement(
-					"INSERT INTO `quiz`.`players` (name, last_score) VALUES (?, ?)");			
-			updateScoreStmt = con.prepareStatement(
-					"UPDATE `quiz`.`players` SET last_score = ? WHERE name = ?");
-			getQuestionStmt = con.prepareStatement(
-					"SELECT question, correct_answer FROM `quiz`.`questions` WHERE id = ?");			
-		}
-		catch(SQLException e)
-		{
-			System.out.print("SQL Exception caught : " + e.getMessage());
-		}
+		DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
+		lastScoreStmt   = dbMgr.getPreparedStatement("get-last-score");
+		insertScoreStmt = dbMgr.getPreparedStatement("insert-new-score");
+		updateScoreStmt = dbMgr.getPreparedStatement("update-score");
+		getQuestionStmt = dbMgr.getPreparedStatement("get-question");
 	}
 	
 	public void setUsername(String playerUsername) {
