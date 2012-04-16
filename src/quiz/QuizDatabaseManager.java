@@ -9,17 +9,17 @@ import java.util.Hashtable;
 
 // TODO: Need to throw exceptions upwards??
 
-public class DBConnectionMgr {
-	private static DBConnectionMgr instance;
+public class QuizDatabaseManager {
+	private static QuizDatabaseManager instance;
 	private static Connection con;
 	private static Hashtable<String, PreparedStatement> preparedStatements = new Hashtable<String, PreparedStatement>();	
 	
 	/**
 	 * @return
 	 */
-	public static DBConnectionMgr getInstance() {
+	public static QuizDatabaseManager getInstance() {
 		if (null == instance) {
-			instance = new DBConnectionMgr();
+			instance = new QuizDatabaseManager();
 		}
 		return instance;
 	}
@@ -43,7 +43,7 @@ public class DBConnectionMgr {
 		return preparedStatements.get(statementName);
 	}
 	
-	private DBConnectionMgr() {		
+	private QuizDatabaseManager() {		
 		try {
 			// Load (and therefore register) the Database Driver
 			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");

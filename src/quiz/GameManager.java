@@ -20,7 +20,7 @@ public class GameManager implements Renderable {
 	PreparedStatement getQuestionStmt;
 	
 	public GameManager() {
-		DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
+		QuizDatabaseManager dbMgr = QuizDatabaseManager.getInstance();
 		lastScoreStmt   = dbMgr.getPreparedStatement("get-last-score");
 		insertScoreStmt = dbMgr.getPreparedStatement("insert-new-score");
 		updateScoreStmt = dbMgr.getPreparedStatement("update-score");

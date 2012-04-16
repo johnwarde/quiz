@@ -32,7 +32,7 @@ public class Controller extends HttpServlet {
     
     public void init() {
 	    templatesFolder = getServletContext().getRealPath("/WEB-INF/templates");
-    	DBConnectionMgr.getInstance(); // Will create the connection to the DB
+    	QuizDatabaseManager.getInstance(); // Will create the connection to the DB
     }
     
 	/**
@@ -106,7 +106,7 @@ public class Controller extends HttpServlet {
 
 
     public void destroy() {
-    	DBConnectionMgr.getInstance().close();    	
+    	QuizDatabaseManager.getInstance().close();    	
     }
 
 }
