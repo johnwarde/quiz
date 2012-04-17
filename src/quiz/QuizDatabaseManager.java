@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 
-// TODO: Need to throw exceptions upwards??
-
 public class QuizDatabaseManager {
 	private static QuizDatabaseManager instance;
 	private static Connection con;
