@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
-public class GameManager implements Renderable {
+public class GameManager {
 	private static final int maxQuestions = 10;
 	private String username = "";
 	private int questionNo = 0;
