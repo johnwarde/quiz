@@ -19,8 +19,6 @@ public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String cookieValueSeparator = "|";
 	private static final String cookieName = "session";
-	private static String templatesFolder;
-
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -31,8 +29,10 @@ public class Controller extends HttpServlet {
 
     
     public void init() {
-	    templatesFolder = getServletContext().getRealPath("/WEB-INF/templates");
     	QuizDatabaseManager.getInstance(); // Will create the connection to the DB
+    	// Initialize Template Engine
+    	TemplatesEngine templatesEng =  TemplatesEngine.getInstance();
+    	templatesEng.init(this);
     }
     
 	/**
@@ -55,9 +55,7 @@ public class Controller extends HttpServlet {
 	 */
 	protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String action = request.getServletPath().substring(1);
-	    String cssref = request.getContextPath() + "/styles/browser-desktop/quiz.css";
-	    GameManager gameMgr = new GameManager();;
-	    PageView view = PageViewFactory.createView(request, templatesFolder);
+	    GameManager gameMgr = new GameManager();
 	    Cookie[] cookies;
 		Hashtable<String, String> nvpairs;
 	    response.setContentType("text/html");
@@ -72,7 +70,7 @@ public class Controller extends HttpServlet {
 			response.addCookie(newCookie);
 			gameMgr.setUsername(username);
 			nvpairs = gameMgr.getValuesForWelcome();
-			view.render(out, nvpairs, "welcome", cssref);
+			TemplatesEngine.getInstance().render(nvpairs, "welcome", out, request);
 			break;
 		case "play":
 		    cookies = request.getCookies();
@@ -89,8 +87,7 @@ public class Controller extends HttpServlet {
 		    gameMgr.setUserAnswer(request.getParameter("answer"));
 		    gameMgr.setUserTotalScore(request.getParameter("total"));
 			nvpairs = gameMgr.getValuesForSequence();
-			view.render(out, nvpairs, nvpairs.get("use-template"), cssref);
-			// TODO: use javascript/jQuery to validate that an answer was selected
+			TemplatesEngine.getInstance().render(nvpairs, nvpairs.get("use-template"), out, request);
 			break;
 		default:
 			break;
